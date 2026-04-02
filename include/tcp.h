@@ -107,8 +107,6 @@ typedef enum {
 /* Human-readable state name (for logging) */
 const char *tcp_state_name(tcp_state_t state);
 
-/* TCP flags mask (bits [5:0] of data_offset_flags) */
-#define TCP_FLAGS_MASK 0x003F
 /* ------------------------------------------------------------------ */
 
 /*
