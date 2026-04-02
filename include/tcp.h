@@ -271,4 +271,22 @@ uint16_t tcp_send_data(tcp_conn_t *conn,
  */
 uint16_t tcp_send_fin(tcp_conn_t *conn, eth_frame_t *out_frame);
 
+/*
+ * tcp_send_ack - Send a pure ACK segment (no data payload)
+ *
+ * Used to acknowledge received data or FIN segments on an established
+ * connection.  The ack_num is taken from conn->rcv_nxt, which must be
+ * updated by the caller before this function is invoked.
+ *
+ * Does NOT advance snd_nxt (a pure ACK consumes no sequence numbers).
+ *
+ * Valid in states: ESTABLISHED, FIN_WAIT_1, FIN_WAIT_2, CLOSE_WAIT.
+ *
+ * @conn      : connection in an ACK-able state
+ * @out_frame : buffer to write the Ethernet frame into
+ *
+ * Returns frame length on success, 0 on error.
+ */
+uint16_t tcp_send_ack(tcp_conn_t *conn, eth_frame_t *out_frame);
+
 #endif /* VESPER_TCP_H */

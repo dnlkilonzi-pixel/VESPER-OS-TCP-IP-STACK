@@ -108,6 +108,29 @@ bool net_tcp_send(tcp_conn_t *conn,
 void net_tcp_close(tcp_conn_t *conn);
 
 /*
+ * net_tcp_recv - Receive data from an established TCP connection
+ *
+ * Spin-polls the NIC for incoming TCP data segments and accumulates
+ * their payloads into @buf.  The loop exits when either:
+ *   (a) the remote peer sends a FIN (clean end of data), or
+ *   (b) @timeout poll iterations have elapsed with no FIN.
+ *
+ * Incoming data is automatically acknowledged with a pure ACK.
+ *
+ * @conn     : connection in ESTABLISHED state
+ * @buf      : caller-allocated buffer to write received data into
+ * @capacity : maximum number of bytes to store in @buf
+ * @timeout  : maximum number of net_poll() iterations to wait
+ *
+ * Returns the total number of bytes written into @buf (may be 0 on
+ * error or if no data arrived within the timeout).
+ */
+uint16_t net_tcp_recv(tcp_conn_t *conn,
+                      uint8_t    *buf,
+                      uint16_t    capacity,
+                      uint32_t    timeout);
+
+/*
  * net_receive_handler - Internal RX callback registered with the NIC
  *
  * This is called by the NIC driver for each received frame.  It parses

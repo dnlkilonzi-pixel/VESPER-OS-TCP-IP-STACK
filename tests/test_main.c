@@ -26,6 +26,7 @@ int g_tests_failed = 0;
 void test_ethernet(void);
 void test_ip(void);
 void test_tcp(void);
+void test_arp(void);
 
 /* ------------------------------------------------------------------ */
 /* main                                                                */
@@ -40,6 +41,7 @@ int main(void)
     test_ethernet();
     test_ip();
     test_tcp();
+    test_arp();
 
     printf("\n====================================\n");
     printf("  Results: %d/%d passed", g_tests_passed, g_tests_run);

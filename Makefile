@@ -45,14 +45,17 @@ BUILDDIR = build
 ETHERNET_SRC = ethernet/ethernet.c
 IP_SRC       = ip/ip.c
 TCP_SRC      = tcp/tcp.c
-DRIVER_SRC   = drivers/nic_stub.c
+DRIVER_SRC   = drivers/nic_stub.c drivers/e1000.c
 NET_SRC      = net/net.c net/klog.c
+ARP_SRC      = arp/arp.c
+HTTP_SRC     = http/http.c
 
-LIB_SRCS = $(ETHERNET_SRC) $(IP_SRC) $(TCP_SRC) $(DRIVER_SRC) $(NET_SRC)
+LIB_SRCS = $(ETHERNET_SRC) $(IP_SRC) $(TCP_SRC) $(DRIVER_SRC) \
+           $(NET_SRC) $(ARP_SRC) $(HTTP_SRC)
 LIB_OBJS = $(patsubst %.c,$(BUILDDIR)/%.o,$(LIB_SRCS))
 
 TEST_SRCS = tests/test_main.c tests/test_ethernet.c tests/test_ip.c \
-            tests/test_tcp.c
+            tests/test_tcp.c tests/test_arp.c
 TEST_OBJS = $(patsubst %.c,$(BUILDDIR)/%.o,$(TEST_SRCS))
 
 LIB      = $(BUILDDIR)/libnet.a

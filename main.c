@@ -20,6 +20,7 @@
 #include "include/net.h"
 #include "include/types.h"
 #include "include/klog.h"
+#include "include/http.h"
 
 /* ------------------------------------------------------------------ */
 /* Hard-coded network configuration                                    */
@@ -110,6 +111,39 @@ void vesper_net_demo(void)
     net_tcp_close(&conn);
 
     klog_puts("[DEMO] Connection closed\r\n");
+
+    /* --------------------------------------------------------------- */
+    /* Step 5: HTTP GET demo                                           */
+    /* --------------------------------------------------------------- */
+    /*
+     * Attempt an HTTP GET to example.com (93.184.216.34).
+     * On real hardware with a routed network this will fetch the
+     * HTML home page; on the stub NIC it will log a connect timeout
+     * (no real server) and return false — both outcomes are expected.
+     */
+    {
+        static uint8_t http_buf[1460]; /* one TCP MSS worth of response  */
+        uint16_t       http_len = 0;
+        uint32_t       example_ip = ip_make_addr(93, 184, 216, 34);
+
+        klog_puts("\r\n[DEMO] --- HTTP GET demo ---\r\n");
+        klog_puts("[DEMO] Target: http://93.184.216.34/\r\n");
+
+        if (http_get(example_ip, "/", http_buf,
+                     (uint16_t)(sizeof(http_buf) - 1), &http_len)) {
+            /* NUL-terminate so klog_puts can safely print it */
+            http_buf[http_len] = '\0';
+            klog_puts("[DEMO] HTTP response (");
+            klog_udec(http_len);
+            klog_puts(" bytes):\r\n");
+            klog_puts((const char *)http_buf);
+            klog_puts("\r\n");
+        } else {
+            klog_puts("[DEMO] HTTP GET failed "
+                      "(expected on stub NIC without a real server)\r\n");
+        }
+    }
+
     klog_puts("========================================\r\n");
 }
 

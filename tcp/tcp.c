@@ -457,3 +457,22 @@ uint16_t tcp_send_fin(tcp_conn_t *conn, eth_frame_t *out_frame)
 
     return frame_len;
 }
+
+/* ------------------------------------------------------------------ */
+/* tcp_send_ack                                                        */
+/* ------------------------------------------------------------------ */
+
+uint16_t tcp_send_ack(tcp_conn_t *conn, eth_frame_t *out_frame)
+{
+    if (!conn || !out_frame) return 0;
+
+    /* ACK is valid in any state where we have an established receive path */
+    if (conn->state != TCP_STATE_ESTABLISHED &&
+        conn->state != TCP_STATE_FIN_WAIT_1  &&
+        conn->state != TCP_STATE_FIN_WAIT_2  &&
+        conn->state != TCP_STATE_CLOSE_WAIT)
+        return 0;
+
+    /* Pure ACK — no data, no flags other than ACK, does not advance snd_nxt */
+    return tcp_build_segment(conn, TCP_FLAG_ACK, NULL, 0, out_frame);
+}

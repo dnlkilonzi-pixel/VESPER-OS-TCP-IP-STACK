@@ -16,6 +16,7 @@
  */
 
 #include "../include/nic.h"
+#include "../include/e1000.h"
 #include "../include/klog.h"
 
 /* ------------------------------------------------------------------ */
@@ -135,8 +136,20 @@ nic_driver_t *g_nic = NULL;
 bool nic_init(void)
 {
     /*
-     * In a real OS we would probe PCI here and load the appropriate
-     * hardware driver.  For now, always use the stub.
+     * Probe for a real e1000 NIC first.  In bare-metal / QEMU this will
+     * scan the PCI bus, find the device, and set up the hardware rings.
+     * In TEST_HOST mode e1000_init() returns false immediately.
+     */
+    if (e1000_driver.init()) {
+        g_nic = &e1000_driver;
+        g_nic->ready = true;
+        klog_puts("[NIC] e1000 driver active\r\n");
+        return true;
+    }
+
+    /*
+     * No real hardware detected — fall back to the software loopback
+     * stub, which is always available for unit testing.
      */
     g_nic = &nic_stub_driver;
 
